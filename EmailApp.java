@@ -33,16 +33,21 @@ public class EmailApp {
                 String firstName = sc.nextLine();
                 System.out.print("Enter Last Name: ");
                 String lastName = sc.nextLine();
+                System.out.print("Enter Department: ");
+                String departmentName = sc.nextLine();
 
-                obj = new email(firstName, lastName);
+                // Insert department if it doesn't exist
+                //insertDepartment(departmentName);
 
-                // Insert new email record into the database
-                insertEmailRecord(obj);
+                obj = new email(firstName, lastName, departmentName);
+
+                // Insert new employee record into the database
+                insertEmployeeRecord(obj);
                 break;
 
             case 2:
                 // Show existing emails
-                showEmails();
+                System.out.println(getEmails());
                 return; // Exit after showing emails
 
             default:
@@ -63,14 +68,14 @@ public class EmailApp {
                     System.out.print("Enter new Email: ");
                     String newEmail = sc.nextLine();
                     obj.setAlternateEmail(newEmail);
-                    updateEmailRecord(obj);
+                    updateEmployeeRecord(obj);
                     break;
 
                 case 2:
                     System.out.print("Enter new Password: ");
                     String newPassword = sc.nextLine();
                     obj.changePassword(newPassword);
-                    updateEmailRecord(obj);
+                    updateEmployeeRecord(obj);
                     break;
 
                 case 3:
@@ -92,9 +97,26 @@ public class EmailApp {
         sc.close(); // Close scanner to avoid resource leak
     }
 
-    // Method to insert a new email record into the database
-    public static void insertEmailRecord(email obj) {
-        String sql = "INSERT INTO emails (first_name, last_name, email, password, department, alternate_email) VALUES (?, ?, ?, ?, ?, ?)";
+    // Method to insert a new department if it doesn't already exist
+    /*public static void insertDepartment(String departmentName) {
+        String sql = "INSERT IGNORE INTO departments (department_name) VALUES (?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, departmentName);
+            pstmt.executeUpdate();
+
+            System.out.println("Department inserted or already exists!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    // Method to insert a new employee record into the database
+    public static void insertEmployeeRecord(email obj) {
+        String sql = "INSERT INTO employees (first_name, last_name, email, password, department_id, alternate_email) " +
+                     "VALUES (?, ?, ?, ?, (SELECT department_id FROM departments WHERE department_name = ?), ?)";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -106,16 +128,16 @@ public class EmailApp {
             pstmt.setString(6, obj.getAlternateEmail());
             pstmt.executeUpdate();
 
-            System.out.println("Record inserted successfully!");
+            System.out.println("Employee record inserted successfully!");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // Method to update an existing email record in the database
-    public static void updateEmailRecord(email obj) {
-        String sql = "UPDATE emails SET password = ?, alternate_email = ? WHERE email = ?";
+    // Method to update an existing employee record in the database
+    public static void updateEmployeeRecord(email obj) {
+        String sql = "UPDATE employees SET password = ?, alternate_email = ? WHERE email = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -131,20 +153,34 @@ public class EmailApp {
         }
     }
 
-    // Method to show existing emails in the database
-    public static void showEmails() {
-        String sql = "SELECT * FROM emails";
+    // Method to retrieve all existing emails from the database
+    public static String getEmails() {
+        StringBuilder emails = new StringBuilder();
+        String sql = "SELECT e.id, e.first_name, e.last_name, e.email, d.department_name FROM employees e " +
+                     "JOIN departments d ON e.department_id = d.department_id";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
-            System.out.println("Existing Emails:");
             while (rs.next()) {
-                System.out.println("ID: " + rs.getInt("id") + ", Email: " + rs.getString("email"));
+                int id = rs.getInt("id");
+                String email = rs.getString("email");
+                String firstName = rs.getString("first_name");
+                String lastName = rs.getString("last_name");
+                String departmentName = rs.getString("department_name");
+
+                emails.append("ID: ").append(id)
+                      .append(", Name: ").append(firstName).append(" ").append(lastName)
+                      .append(", Department: ").append(departmentName)
+                      .append(", Email: ").append(email)
+                      .append("\n");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return "Error retrieving emails from the database.";
         }
+        return emails.toString();
     }
+
 }
