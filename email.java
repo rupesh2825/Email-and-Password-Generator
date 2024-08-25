@@ -1,7 +1,5 @@
 package emailApp;
 
-import java.util.Scanner;
-
 public class email {
     private String firstName;
     private String lastName;
@@ -10,50 +8,41 @@ public class email {
     private String department;
     private String alternateEmail;
 
-    // Constructor to receive the first name and last name
-    public email(String firstName, String lastName) {
+    // Constructor to receive the first name, last name, and department
+    public email(String firstName, String lastName, String department) {
         this.firstName = firstName;
         this.lastName = lastName;
-        System.out.println("Email Created: " + this.firstName + " " + this.lastName);
+        this.department = department;
 
-        // Call a method asking for the department, return the department
-        this.department = setDepartment();
+        System.out.println("Email Created: " + this.firstName + " " + this.lastName);
         System.out.println("Department: " + this.department);
 
         // Combine elements to generate email
-        email = firstName.toLowerCase() + lastName.toLowerCase() + "@" + department + ".Company.com";
-        System.out.println("Your Email: " + email);
+        this.email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + this.department.toLowerCase() + ".company.com";
+        System.out.println("Your Email: " + this.email);
 
-        // Call a method asking for the random password
+        // Generate a random password
         this.password = randomPassword(8);
         System.out.println("Your Password: " + this.password);
     }
 
-    // Ask for the department
-    private String setDepartment() {
-        System.out.print("DEPARTMENT CODE\n1 Sales \n2 Development \n3 Accounting \n0 None \nEnter the Department Code: ");
-        Scanner sc = new Scanner(System.in);
-        int depChoice = sc.nextInt();
-
-        if (depChoice == 1) {
-            return "Sales";
-        } else if (depChoice == 2) {
-            return "Development";
-        } else if (depChoice == 3) {
-            return "Accounting";
-        } else {
-            return "";
-        }
-    }
-
-    // Generate a random password
+    // Generate a random password with at least one of each type of character
     private String randomPassword(int length) {
-        String passwordSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$&";
+        String upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialChars = "!@#$&";
+
+        String combinedChars = upperCaseLetters + lowerCaseLetters + digits + specialChars;
         char[] password = new char[length];
 
-        for (int i = 0; i < length; i++) {
-            int rand = (int) (Math.random() * passwordSet.length());
-            password[i] = passwordSet.charAt(rand);
+        password[0] = upperCaseLetters.charAt((int) (Math.random() * upperCaseLetters.length()));
+        password[1] = lowerCaseLetters.charAt((int) (Math.random() * lowerCaseLetters.length()));
+        password[2] = digits.charAt((int) (Math.random() * digits.length()));
+        password[3] = specialChars.charAt((int) (Math.random() * specialChars.length()));
+
+        for (int i = 4; i < length; i++) {
+            password[i] = combinedChars.charAt((int) (Math.random() * combinedChars.length()));
         }
         return new String(password);
     }
