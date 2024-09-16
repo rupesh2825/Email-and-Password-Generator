@@ -6,7 +6,6 @@ public class email {
     private String email;
     private String password;
     private String department;
-    private String alternateEmail;
 
     // Constructor to receive the first name, last name, and department
     public email(String firstName, String lastName, String department) {
@@ -14,16 +13,11 @@ public class email {
         this.lastName = lastName;
         this.department = department;
 
-        System.out.println("Email Created: " + this.firstName + " " + this.lastName);
-        System.out.println("Department: " + this.department);
-
         // Combine elements to generate email
         this.email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@" + this.department.toLowerCase() + ".company.com";
-        System.out.println("Your Email: " + this.email);
 
         // Generate a random password
         this.password = randomPassword(8);
-        System.out.println("Your Password: " + this.password);
     }
 
     // Generate a random password with at least one of each type of character
@@ -36,20 +30,17 @@ public class email {
         String combinedChars = upperCaseLetters + lowerCaseLetters + digits + specialChars;
         char[] password = new char[length];
 
+        // Ensure the password contains at least one of each type of character
         password[0] = upperCaseLetters.charAt((int) (Math.random() * upperCaseLetters.length()));
         password[1] = lowerCaseLetters.charAt((int) (Math.random() * lowerCaseLetters.length()));
         password[2] = digits.charAt((int) (Math.random() * digits.length()));
         password[3] = specialChars.charAt((int) (Math.random() * specialChars.length()));
 
+        // Fill the remaining length with random characters from the combined set
         for (int i = 4; i < length; i++) {
             password[i] = combinedChars.charAt((int) (Math.random() * combinedChars.length()));
         }
         return new String(password);
-    }
-
-    // Set the alternate email
-    public void setAlternateEmail(String altEmail) {
-        this.alternateEmail = altEmail;
     }
 
     // Change the password
@@ -57,6 +48,7 @@ public class email {
         this.password = password;
     }
 
+    // Getters
     public String getFirstName() {
         return firstName;
     }
@@ -72,11 +64,7 @@ public class email {
     public String getDepartment() {
         return department;
     }
-
-    public String getAlternateEmail() {
-        return alternateEmail;
-    }
-
+    
     public String getPassword() {
         return password;
     }
