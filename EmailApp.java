@@ -10,7 +10,7 @@ public class EmailApp {
     // Database URL, username, and password
     static final String DB_URL = "jdbc:mysql://localhost:3306/emailDB"; // Update database name
     static final String USER = "root"; // Update with your MySQL username
-    static final String PASS = "ra.one"; // Replace with your MySQL password
+    static final String PASS = ""; // Replace with your MySQL password
 
         
     // Method to insert a new employee record into the database
